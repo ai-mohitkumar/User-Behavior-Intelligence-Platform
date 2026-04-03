@@ -1,3 +1,5 @@
+# User-Behavior-Clustering
+
 # An Intelligent Framework for User Behavior Pattern Mining using Inter-Cluster Separation Optimization
 
 This framework enhances clustering quality by maximizing inter-cluster distance and minimizing intra-cluster variance, leading to more interpretable user behavior insights.
@@ -104,4 +106,4 @@ The system now prints these metrics, shows Elbow plot, exports `clustering_metri
 - "In clustering, accuracy is measured by Silhouette Score instead of traditional classification accuracy."
 - "We maximized Silhouette (0.72) and minimized DBI (0.45) for optimal segmentation."
 - "Elbow method + Silhouette confirm k=3 as best."
-- "Pattern mining extracts behavioral insights from clusters."
+- "Pattern mining extracts behavioral insights from clusters.
