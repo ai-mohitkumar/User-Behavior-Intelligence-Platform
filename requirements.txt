@@ -5,3 +5,15 @@ mlxtend
 streamlit
 plotly
 kaleido
+fastapi
+uvicorn[standard]
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+sqlalchemy
+psycopg2-binary
+alembic
+# streamlit-lottie==0.0.5  # Optional animations
+# scikit-learn-extra  # Windows C++ issue; core sklearn sufficient
+
+

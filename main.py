@@ -100,3 +100,4 @@ def run_pipeline(csv_path=DATA_PATH):
 
 if __name__ == '__main__':
     run_pipeline()
+
