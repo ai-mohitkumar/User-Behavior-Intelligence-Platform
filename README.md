@@ -1,1 +1,1 @@
-# User-Behavior-Intelligence-Platform
+ 🧠 User Behavior Optimization ML Platform
