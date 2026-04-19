@@ -36,6 +36,9 @@ st.markdown("""
 with st.spinner("Loading Intelligent Clustering System..."):
     st.title("🧠 Intelligent Adaptive Clustering Dashboard")
     st.markdown("**AutoML • Novel ICSO Metric • PCA/LDA Viz • Anomaly Detection • Business Insights**")
+    if st.button("⚡ Run ML Analysis (Auto Sample Data)", type="primary"):
+        st.session_state.results = None  # Clear
+        st.rerun()
 
 # Intelligent Engine Class (embedded)
 class IntelligentAdaptiveClusteringEngine:
@@ -139,6 +142,7 @@ if run_button or st.session_state.get('results'):
 
     with st.spinner("🤖 Running AutoML Clustering..."):
         engine = IntelligentAdaptiveClusteringEngine(df, numeric_features)
+        st.session_state.X_scaled = engine.X_scaled
         best_algo, algo_scores, labels = engine.auto_select_algorithm()
         engine.data['cluster'] = labels
         anomalies_count, anomalies_pct = engine.detect_anomalies()
@@ -147,7 +151,8 @@ if run_button or st.session_state.get('results'):
         st.session_state.results = {
             'df': engine.data, 'best_algo': best_algo, 'algo_scores': algo_scores,
             'labels': labels, 'metrics': metrics, 'icso': icso,
-            'anomalies_count': anomalies_count, 'anomalies_pct': anomalies_pct
+            'anomalies_count': anomalies_count, 'anomalies_pct': anomalies_pct,
+            'numeric_features': numeric_features
         }
 
     # Success animation
@@ -186,9 +191,9 @@ if st.session_state.get('results'):
             silhouettes = []
             for k in k_range:
                 kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
-                labels_k = kmeans.fit_predict(engine.X_scaled)
+                labels_k = kmeans.fit_predict(st.session_state.X_scaled)
                 inertias.append(kmeans.inertia_)
-                silhouettes.append(silhouette_score(engine.X_scaled, labels_k))
+                silhouettes.append(silhouette_score(st.session_state.X_scaled, labels_k))
             elbow_df = pd.DataFrame({'k': list(k_range), 'WCSS': inertias, 'Silhouette': silhouettes})
             fig_elbow = go.Figure()
             fig_elbow.add_trace(go.Scatter(x=elbow_df['k'], y=elbow_df['WCSS'], mode='lines+markers', name='WCSS (Elbow)', line=dict(color='red')))
@@ -218,21 +223,26 @@ if st.session_state.get('results'):
                                   x='PC1', y='PC2', color='cluster')
             st.plotly_chart(fig_pca2, use_container_width=True)
         with col_lda:
-            if 'user_segment' in df.columns:
-                from sklearn.preprocessing import LabelEncoder
-                le = LabelEncoder()
-                y = le.fit_transform(df['user_segment'].fillna('Unknown'))
-                lda = LinearDiscriminantAnalysis(n_components=min(3, len(np.unique(y))))
-                X_lda = lda.fit_transform(StandardScaler().fit_transform(df[numeric_features].fillna(0)), y)
-                fig_lda = px.scatter_3d(pd.DataFrame({
-                    'LD1': X_lda[:,0] if X_lda.shape[1] > 0 else np.zeros(len(df)),
-                    'LD2': X_lda[:,1] if X_lda.shape[1] > 1 else np.zeros(len(df)),
-                    'LD3': X_lda[:,2] if X_lda.shape[1] > 2 else np.zeros(len(df)),
-                    'segment': le.inverse_transform(y)
-                }), x='LD1', y='LD2', z='LD3', color='segment', title="LDA 3D Components")
-                st.plotly_chart(fig_lda, use_container_width=True)
-            else:
-                st.info("No 'user_segment' column for LDA.")
+            # Auto-generate segments for LDA if missing
+            if 'user_segment' not in df.columns:
+                first_feature = results['numeric_features'][0] if results['numeric_features'] and results['numeric_features'][0] in df.columns else df.select_dtypes(include=[np.number]).columns[0]
+                df['user_segment'] = pd.cut(df[first_feature], bins=3, labels=['Low', 'Medium', 'High'])
+            
+            from sklearn.preprocessing import LabelEncoder
+            le = LabelEncoder()
+            y = le.fit_transform(df['user_segment'].astype(str))
+            n_classes = len(np.unique(y))
+            n_comp = min(3, n_classes - 1, len(results['numeric_features']))
+            lda = LinearDiscriminantAnalysis(n_components=n_comp)
+
+            X_lda = lda.fit_transform(StandardScaler().fit_transform(df[results['numeric_features']].fillna(0)), y)
+            fig_lda = px.scatter_3d(pd.DataFrame({
+                'LD1': X_lda[:,0] if X_lda.shape[1] > 0 else np.zeros(len(df)),
+                'LD2': X_lda[:,1] if X_lda.shape[1] > 1 else np.zeros(len(df)),
+                'LD3': X_lda[:,2] if X_lda.shape[1] > 2 else np.zeros(len(df)),
+                'segment': le.inverse_transform(y)
+            }), x='LD1', y='LD2', z='LD3', color='segment', title="LDA 3D Components (Auto-segments)")
+            st.plotly_chart(fig_lda, use_container_width=True)
 
     with tab4:
         # Cluster profiles

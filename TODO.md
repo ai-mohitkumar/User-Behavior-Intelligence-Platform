@@ -1,18 +1,17 @@
-# PROJECT TODO STEPS
+# ML Data Analytics Auto-Run TODO
+Current Working Directory: c:/Users/mohit kumar/OneDrive/Desktop/optimization project
 
-## Plan Execution Tracking
+## Plan Summary
+- Fix Streamlit LDA ValueError (n_components > n_classes-1)
+- Add/enhance one-click 'Run ML Analysis' using sample CSV, auto graphs
+- Fix backend imports for React UserBehaviorApp stability
+- Ensure live graphs on browser (React + backend plots data)
 
-### Approved Plan:
-- Remove unnecessary completed files: TODO.md, TODO_dashboard.md 
-- Preserve used/core files (UserBehaviorApp/, run_all.bat, docs like FINAL_SUMMARY.md/QUICKSTART.md, requirements.txt, main.py etc.)
-
-### Steps:
-- [x] Step 1: Create this TODO.md tracker
-- [x] Step 2: Remove TODO_dashboard.md (completed, safe) - Confirmed not present in dir
-- [x] Step 3: Self-remove this TODO.md after cleanup
-- [x] Step 4: Verify with `dir` (~32 files, prior cleanup noted)
-- [x] Step 5: Test run_all.bat (executed successfully)
-- [x] Step 6: Complete task
-
-**Cleanup complete. TODO.md no longer needed.**
+## Steps
+- [x] 1. Fix streamlit_intelligent_dashboard.py LDA error + add auto-run button with sample data (complete: LDA, scope, button)
+- [x] 2. Fix UserBehaviorApp/backend/main.py imports (non-relative import + path)
+- [x] Extra: Added auto-segment generation for LDA (no 'user_segment' warning gone, uses feature bins Low/Medium/High)
+- [ ] 3. Add /auto-analyze endpoint in backend
+- [ ] 4. Restart services, test localhost:3000/8501 auto analytics
+- [ ] 5. Complete
 

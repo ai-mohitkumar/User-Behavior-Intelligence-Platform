@@ -10,7 +10,10 @@ import pandas as pd
 from datetime import timedelta
 from io import StringIO
 import sys
-sys.path.append('..')
+import os
+sys.path.append(os.path.dirname(__file__))
+import ml_service
+import ml_service_intelligent
 from ml_service import run_analysis
 from ml_service_intelligent import run_intelligent_analysis
 from .auth import (create_access_token, get_password_hash, verify_password, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES)
